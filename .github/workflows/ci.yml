@@ -5,6 +5,10 @@ on:
     branches:
       - develop
 
+defaults:
+  run:
+    working-directory: lynx
+
 jobs:
   static-check:
     runs-on: lynx-ubuntu-22.04-avd-medium
@@ -27,33 +31,27 @@ jobs:
       - name: Install Common Dependencies
         uses: ./lynx/.github/actions/common-deps
       - name: Run file type check
-        run: |-
-          cd $GITHUB_WORKSPACE/lynx
+        run: |
           source tools/envsetup.sh
           python3 tools_shared/git_lynx.py check --checkers file-type
       - name: Run cpplint check
-        run: |-
-          cd $GITHUB_WORKSPACE/lynx
+        run: |
           source tools/envsetup.sh
           python3 tools_shared/git_lynx.py check --checkers cpplint
       - name: Run java-lint check
-        run: |-
-          cd $GITHUB_WORKSPACE/lynx
+        run: |
           source tools/envsetup.sh
           python3 tools_shared/git_lynx.py check --checkers java-lint
       - name: Run commit-message check
-        run: |-
-          cd $GITHUB_WORKSPACE/lynx
+        run: |
           source tools/envsetup.sh
           python3 tools_shared/git_lynx.py check --checkers commit-message
       - name: Run coding-style check
-        run: |-
-          cd $GITHUB_WORKSPACE/lynx
+        run: |
           source tools/envsetup.sh
           python3 tools_shared/git_lynx.py check --checkers coding-style
       - name: Run android-check-style check
-        run: |-
-          cd $GITHUB_WORKSPACE/lynx
+        run: |
           source tools/envsetup.sh
           python3 tools_shared/git_lynx.py check --checkers android-check-style
 
@@ -62,6 +60,8 @@ jobs:
     steps:
       - name: Download Source
         uses: actions/checkout@v4.2.2
+        with:
+          path: lynx
       - name: Install SSH Key
         uses: kielabokkie/ssh-key-and-known-hosts-action@v1
         with:
@@ -76,10 +76,11 @@ jobs:
             set -e
             python3 -m venv myenv
             source myenv/bin/activate
+            cd $GITHUB_WORKSPACE/lynx
             python3 -m pip install PyYAML -i https://pypi.org/simple
             tools/hab sync .
       - name: Run Unittests
-        run: |-
+        run: |
           set -e
           source myenv/bin/activate
           source tools/envsetup.sh
@@ -105,7 +106,6 @@ jobs:
         uses: ./lynx/.github/actions/common-deps
       - name: Run Unittests
         run: |
-          cd $GITHUB_WORKSPACE/lynx
           set -e
           source tools/envsetup.sh
           tools/rtf/rtf native-ut run --names lynx
@@ -129,8 +129,7 @@ jobs:
       - name: Install Common Dependencies
         uses: ./lynx/.github/actions/common-deps
       - name: Run Unittests
-        run: |-
-          cd $GITHUB_WORKSPACE/lynx
+        run: |
           set -e
           source tools/envsetup.sh
           tools/rtf/rtf native-ut run --names devtool
@@ -166,7 +165,7 @@ jobs:
         with:
           timeout_minutes: 20
           max_attempts: 3
-          command: |-
+          command: |
             set -e
             source myenv/bin/activate
             cd $GITHUB_WORKSPACE/lynx
@@ -175,10 +174,9 @@ jobs:
             bash bundle_install.sh --skip-card-build
             popd
       - name: Run Unittests
-        run: |-
+        run: |
           set -e
-          source myenv/bin/activate
-          cd $GITHUB_WORKSPACE/lynx
+          source ../myenv/bin/activate
           pushd explorer/darwin/ios/lynx_explorer
           xcodebuild -showsdks | grep -Eo -m 1 "iphonesimulator([0-9]{1,}\.)+[0-9]{1,}" > sdk.txt
           sdkVersion=$(awk '{ sub(/iphonesimulator/,""); print $0 }' sdk.txt)
@@ -207,8 +205,7 @@ jobs:
       - name: Install Common Dependencies
         uses: ./lynx/.github/actions/common-deps
       - name: Build Linux Tasm
-        run: |-
-          cd $GITHUB_WORKSPACE/lynx
+        run: |
           source tools/envsetup.sh
           tools/hab sync . -f
           pushd oliver/lynx-tasm
@@ -241,9 +238,8 @@ jobs:
             python3 -m pip install PyYAML -i https://pypi.org/simple
             tools/hab sync .
       - name: Build Darwin Tasm
-        run: |-
-          source myenv/bin/activate
-          cd $GITHUB_WORKSPACE/lynx
+        run: |
+          source ../myenv/bin/activate
           source tools/envsetup.sh
           tools/hab sync . -f
           pushd oliver/lynx-tasm
@@ -270,8 +266,7 @@ jobs:
       - name: Install Common Dependencies
         uses: ./lynx/.github/actions/common-deps
       - name: Build Example App
-        run: |-
-          cd $GITHUB_WORKSPACE/lynx
+        run: |
           source tools/envsetup.sh
           tools/rtf/rtf android-ut run --name lynx
 
