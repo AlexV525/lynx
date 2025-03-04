@@ -1,10 +1,16 @@
 # CHANGELOG
 
-## 3.2.1
+## 3.2.2
 
 ### Patch Changes
 
 - lynx.requireModule support setting timeout time
+
+## 3.2.1
+
+### Patch Changes
+
+- Add typing for selectUniqueID
 
 ## 3.2.0
 
