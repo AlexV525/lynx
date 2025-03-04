@@ -56,8 +56,8 @@ bool LynxBinaryBaseTemplateReader::DecodeHeader() {
   DECODE_U32(total_size);
   if (total_size != stream_->size()) {
     std::ostringstream msg;
-    msg << "template file has broken. Expected size is " << total_size
-        << ". Actual size is " << stream_->size();
+    msg << "bundle file has broken. The expected size of bundle is "
+        << total_size << ". Actual size is " << stream_->size();
     error_message_ = msg.str();
     return false;
   }
